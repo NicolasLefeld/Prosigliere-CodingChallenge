@@ -7,8 +7,8 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"config/db"
-	"routes/routes"
+	"prosigliere-coding-challenge/config"
+	"prosigliere-coding-challenge/routes"
 )
 
 func main() {
@@ -17,16 +17,16 @@ func main() {
 		log.Println("No .env file found, using environment variables")
 	}
 
-	db := db.InitDB()
+	dbConn := config.InitDB()
+	config.AutoMigrate(dbConn)
 
-	db.AutoMigrate(db)
-
-	router := routes.SetupRouter(db)
+	router := routes.SetupRouter(dbConn)
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
+
 	log.Printf("Server running on port %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
